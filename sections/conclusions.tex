@@ -1,0 +1,46 @@
+% =============================================================================
+% 6. CONCLUSIONES
+% =============================================================================
+\section{Conclusiones}
+\label{sec:conclusions}
+
+\subsection{Resumen de logros}
+
+Se logr\'o desplegar exitosamente el modelo Chest Xpert AI como un servicio containerizado de producci\'on que cumple todos los criterios de la r\'ubrica:
+
+\begin{enumerate}
+    \item \textbf{Imagen Docker funcional}: arranca con un solo \texttt{docker run}, sin dependencias externas ni vol\'umenes.
+    \item \textbf{Modelo funcional}: responde con predicciones correctas y pertinentes para las 5 patolog\'ias tor\'acicas.
+    \item \textbf{Documentaci\'on clara}: README con instrucciones de construcci\'on, ejecuci\'on y ejemplo completo.
+    \item \textbf{Pipeline CI/CD}: linting, testing, build y publicaci\'on autom\'atica en GHCR.
+    \item \textbf{Versionado sem\'antico}: releases autom\'aticos basados en Conventional Commits.
+\end{enumerate}
+
+\subsection{Decisiones t\'ecnicas clave}
+
+\begin{itemize}
+    \item \textbf{ONNX Runtime sobre PyTorch}: reducci\'on de dependencias de $\sim$2GB a $\sim$50MB, manteniendo la misma precisi\'on del modelo con inferencia 10x m\'as r\'apida.
+    \item \textbf{uv sobre pip}: resoluci\'on de dependencias 10--100x m\'as r\'apida, lockfile determinista que garantiza reproducibilidad bit-a-bit.
+    \item \textbf{Modelo embebido en la imagen}: sacrifica tama\~no de imagen por simplicidad operativa. El profesor no necesita configurar nada.
+    \item \textbf{Multi-stage build}: minimiza la superficie de ataque y el tama\~no final de la imagen al excluir herramientas de compilaci\'on.
+\end{itemize}
+
+\subsection{Lecciones aprendidas}
+
+\begin{enumerate}
+    \item \textbf{El shebang importa}: en builds multi-stage, los scripts del virtualenv quedan con rutas del builder stage. Soluci\'on: usar \texttt{python -m modulo} en vez de ejecutar el script directamente.
+    \item \textbf{GITHUB\_TOKEN es suficiente para GHCR}: no se necesitan tokens personales para publicar im\'agenes en el Container Registry del mismo repositorio.
+    \item \textbf{Semantic-release + GITHUB\_TOKEN no dispara workflows}: por dise\~no de GitHub. Los tags deben re-pushearse desde local o usar un PAT para triggear el CD.
+    \item \textbf{Pinear versiones de Actions}: usar \texttt{v8} puede fallar si no existe el major tag; \texttt{v8.2.0} es m\'as seguro.
+\end{enumerate}
+
+\subsection{Trabajo futuro}
+
+\begin{itemize}
+    \item \textbf{Observabilidad}: endpoint \texttt{/metrics} con conteo de requests y latencia (formato Prometheus).
+    \item \textbf{Frontend containerizado}: la aplicaci\'on Angular servida desde Nginx como segunda imagen Docker.
+    \item \textbf{Docker Compose}: orquestaci\'on local de backend + frontend con un solo \texttt{docker compose up}.
+    \item \textbf{Kubernetes}: despliegue con Deployment + Service + Ingress para escalabilidad horizontal.
+    \item \textbf{Monitoreo de data drift}: alertas autom\'aticas cuando la distribuci\'on de entradas cambia respecto al training set.
+    \item \textbf{Endpoint de explicabilidad}: Grad-CAM bajo demanda para interpretar predicciones individuales.
+\end{itemize}

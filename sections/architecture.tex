@@ -1,0 +1,77 @@
+% =============================================================================
+% 2. ARQUITECTURA DE LA SOLUCION
+% =============================================================================
+\section{Arquitectura de la soluci\'on}
+\label{sec:architecture}
+
+\subsection{Visi\'on general}
+
+El sistema sigue una arquitectura de microservicio stateless donde el cliente env\'ia una imagen y recibe predicciones en formato JSON. Los componentes principales son:
+
+\begin{enumerate}
+    \item \textbf{Cliente}: cualquier aplicaci\'on que realice requests HTTP (curl, frontend Angular, Postman).
+    \item \textbf{API REST (FastAPI)}: recibe la imagen, la valida, la preprocesa y orquesta la inferencia.
+    \item \textbf{Motor de inferencia (ONNX Runtime)}: ejecuta el modelo DenseNet121 exportado.
+    \item \textbf{Contenedor Docker}: empaqueta todo en una unidad portable y reproducible.
+\end{enumerate}
+
+\subsection{Flujo de datos}
+
+El procesamiento de una solicitud sigue estos pasos:
+
+\begin{enumerate}
+    \item El cliente env\'ia un \texttt{POST /predict} con la imagen en formato \texttt{multipart/form-data}.
+    \item El \textbf{FilterService} valida que la imagen sea una radiograf\'ia (grayscale) mediante an\'alisis de varianza RGB. Im\'agenes a color son rechazadas.
+    \item El \textbf{PreprocessingService} convierte la imagen a escala de grises, la redimensiona a $224 \times 224$ p\'ixeles y la transforma en un tensor float32 de forma $(1, 1, 224, 224)$.
+    \item El \textbf{InferenceService} ejecuta el modelo ONNX y obtiene 5 probabilidades independientes.
+    \item La API devuelve un JSON con las predicciones por patolog\'ia.
+\end{enumerate}
+
+\subsection{Decisiones de dise\~no}
+
+La Tabla~\ref{tab:design-decisions} resume las decisiones t\'ecnicas clave:
+
+\begin{table}[H]
+\centering
+\caption{Decisiones de dise\~no del servicio.}
+\label{tab:design-decisions}
+\small
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Decisi\'on} & \textbf{Justificaci\'on} \\
+\midrule
+FastAPI & Framework async, documentaci\'on autom\'atica (OpenAPI), validaci\'on con Pydantic \\
+ONNX Runtime & Reemplaza PyTorch ($\sim$2GB) por un runtime liviano ($\sim$50MB), inferencia en $\sim$20ms \\
+uv (gestor de deps) & Resoluci\'on 10--100x m\'as r\'apida que pip, lockfile determinista \\
+Multi-stage Docker & Separa build de runtime, reduce tama\~no de imagen \\
+Modelo embebido & Arranca con \texttt{docker run} sin vol\'umenes ni configuraci\'on \\
+Usuario no-root & Principio de m\'inimo privilegio, requerido en entornos productivos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Estructura del proyecto}
+
+\begin{lstlisting}[language={}, caption={Estructura del repositorio chest-xpert-backend.}]
+chest-xpert-backend/
++-- .github/workflows/
+|   +-- ci.yml              # Lint + Test + Build + Release
+|   +-- cd.yml              # Build + Push a GHCR
++-- app/
+|   +-- main.py             # App factory + lifespan
+|   +-- config.py           # Settings (pydantic-settings)
+|   +-- routers/
+|   |   +-- health.py       # GET /health
+|   |   +-- predict.py      # POST /predict
+|   +-- schemas/
+|   |   +-- prediction.py   # Request/Response models
+|   +-- services/
+|       +-- inference.py    # ONNX Runtime session
+|       +-- preprocessing.py # Imagen -> tensor
+|       +-- filter.py       # Filtro RGB-Diff
++-- models/                  # Modelo ONNX (embebido en imagen)
++-- tests/                   # pytest + Hypothesis
++-- Dockerfile               # Multi-stage production build
++-- pyproject.toml           # Deps + Ruff + Semantic Release
++-- uv.lock                  # Lockfile determinista
+\end{lstlisting}

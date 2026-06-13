@@ -1,0 +1,99 @@
+% =============================================================================
+% 4. DESPLIEGUE Y ENTREGA CONTINUA
+% =============================================================================
+\section{Despliegue y entrega continua}
+\label{sec:deployment}
+
+\subsection{Pipeline de CI (Integraci\'on Continua)}
+
+El pipeline de CI se ejecuta en cada push a \texttt{main} y en cada Pull Request. Consta de cuatro jobs secuenciales:
+
+\begin{enumerate}
+    \item \textbf{Lint (Ruff)}: verifica estilo de c\'odigo y detecta errores com\'unes (15 conjuntos de reglas activos).
+    \item \textbf{Test (pytest)}: ejecuta la suite de tests unitarios con cobertura.
+    \item \textbf{Build (Docker)}: verifica que el Dockerfile compila correctamente sin hacer push.
+    \item \textbf{Semantic Release}: analiza los commits convencionales, bumps la versi\'on y crea un tag Git autom\'aticamente.
+\end{enumerate}
+
+\begin{lstlisting}[language={}, caption={Fragmento de ci.yml --- Job de lint.}]
+lint:
+  name: Lint (ruff)
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v6
+    - uses: astral-sh/setup-uv@v8.2.0
+    - run: uv python install 3.14
+    - run: uv sync --frozen --extra dev
+    - run: uv run ruff check .
+    - run: uv run ruff format --check .
+\end{lstlisting}
+
+\subsection{Pipeline de CD (Entrega Continua)}
+
+El pipeline de CD se dispara cuando se crea un tag sem\'antico (\texttt{v*.*.*}). Construye la imagen Docker y la publica en GitHub Container Registry:
+
+\begin{lstlisting}[language={}, caption={Fragmento de cd.yml --- Build y push a GHCR.}]
+on:
+  push:
+    tags: ["v*.*.*"]
+
+jobs:
+  build-and-push:
+    steps:
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v6
+        with:
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=short
+      - uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+\end{lstlisting}
+
+\noindent
+Los tags generados para una release \texttt{v1.0.2} son:
+
+\begin{itemize}
+    \item \texttt{ghcr.io/ahincho/chest-xpert-backend:1.0.2}
+    \item \texttt{ghcr.io/ahincho/chest-xpert-backend:1.0}
+    \item \texttt{ghcr.io/ahincho/chest-xpert-backend:1}
+    \item \texttt{ghcr.io/ahincho/chest-xpert-backend:latest}
+    \item \texttt{ghcr.io/ahincho/chest-xpert-backend:sha-a953d13}
+\end{itemize}
+
+\subsection{Versionado sem\'antico autom\'atico}
+
+Se utiliza \texttt{python-semantic-release} \cite{gift2021mlops} configurado en \texttt{pyproject.toml} para automatizar el versionado basado en Conventional Commits:
+
+\begin{table}[H]
+\centering
+\caption{Convenci\'on de commits y efecto en la versi\'on.}
+\small
+\begin{tabular}{llp{4.5cm}}
+\toprule
+\textbf{Prefijo} & \textbf{Bump} & \textbf{Ejemplo} \\
+\midrule
+\texttt{fix:}   & Patch (1.0.0 $\rightarrow$ 1.0.1) & \texttt{fix: handle empty image} \\
+\texttt{feat:}  & Minor (1.0.0 $\rightarrow$ 1.1.0) & \texttt{feat: add /metrics endpoint} \\
+\texttt{feat!:} & Major (1.0.0 $\rightarrow$ 2.0.0) & \texttt{feat!: change response schema} \\
+\texttt{chore:} & Sin release & \texttt{chore: update README} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Seguridad y buenas pr\'acticas}
+
+\begin{itemize}
+    \item \textbf{Sin secretos en el repositorio}: \texttt{.gitignore} excluye \texttt{.env}, \texttt{.dockerignore} excluye datos sensibles del build context.
+    \item \textbf{GITHUB\_TOKEN autom\'atico}: no se requieren tokens personales; GitHub Actions provee un token efímero por cada ejecuci\'on.
+    \item \textbf{Build provenance attestation}: cada imagen publicada incluye un certificado de origen verificable (supply chain security).
+    \item \textbf{Linting obligatorio}: el c\'odigo no llega a producci\'on sin pasar Ruff (15 reglas incluyendo seguridad con Bandit).
+\end{itemize}

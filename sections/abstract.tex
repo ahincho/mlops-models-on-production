@@ -1,0 +1,12 @@
+% =============================================================================
+% RESUMEN
+% =============================================================================
+\begin{abstract}
+\noindent
+\textbf{Resumen.}
+El presente trabajo documenta el proceso de despliegue en producci\'on de un modelo de clasificaci\'on multi-etiqueta de patolog\'ias tor\'acicas. El modelo, basado en DenseNet121 con transfer learning especializado mediante TorchXRayVision, detecta simult\'aneamente cinco patolog\'ias urgentes (Cardiomegaly, Edema, Consolidation, Atelectasis, Pleural Effusion) a partir de radiograf\'ias de t\'orax, alcanzando un AUC de 0.869. Se implement\'o una API REST con FastAPI y ONNX Runtime para inferencia eficiente ($\sim$20ms por predicci\'on), empaquetada en una imagen Docker multi-stage optimizada con usuario no-root y modelo embebido. Se configur\'o un pipeline completo de CI/CD con GitHub Actions que incluye linting (Ruff), testing (pytest), versionado sem\'antico autom\'atico y publicaci\'on de la imagen en GitHub Container Registry. El servicio se levanta con un solo comando \texttt{docker run} sin dependencias externas.
+
+\vspace{0.3cm}
+\noindent
+\textbf{Palabras clave:} Docker, FastAPI, ONNX Runtime, CI/CD, GitHub Actions, GHCR, Deep Learning, clasificaci\'on multi-etiqueta, MLOps, versionado sem\'antico.
+\end{abstract}

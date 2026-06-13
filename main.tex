@@ -1,0 +1,130 @@
+% =============================================================================
+% Chest Xpert AI - Serving a Multi-Label Chest Pathology Classifier
+% Models in Production - UNI 2026
+% =============================================================================
+\documentclass[11pt, a4paper]{article}
+
+% --- Core Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Use spanish for captions and content
+\usepackage[spanish]{babel}
+
+% Layout and margins
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+
+% Reduce whitespace around sections and floats
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt}
+\titlespacing*{\subsection}{0pt}{8pt plus 3pt minus 2pt}{4pt plus 2pt}
+
+% Graphics and figures
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[font=small, labelfont=bf, skip=6pt]{caption}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+
+% Lists (compact)
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*, topsep=4pt, parsep=2pt, itemsep=2pt}
+
+% Mathematics and symbols
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Code listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{RGB}{245, 245, 245}
+\definecolor{codegreen}{RGB}{40, 167, 69}
+\definecolor{codegray}{RGB}{128, 128, 128}
+\definecolor{codeblue}{RGB}{0, 123, 255}
+
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{codegray},
+    numbers=left,
+    numberstyle=\tiny\color{codegray},
+    keywordstyle=\color{codeblue}\bfseries,
+    commentstyle=\color{codegreen}\itshape,
+    stringstyle=\color{red!70!black},
+    showstringspaces=false,
+    tabsize=2,
+    captionpos=b
+}
+
+% Colors and links
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+% Bibliography
+\usepackage[numbers, sort&compress]{natbib}
+\setlength{\bibsep}{4pt}
+
+% Headers and footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Chest Xpert AI -- Modelos en Producci\'on}
+\fancyhead[R]{\footnotesize \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Prevent vertical stretching
+\raggedbottom
+
+% Abstract formatting
+\usepackage{abstract}
+\setlength{\absleftindent}{0pt}
+\setlength{\absrightindent}{0pt}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries}
+\renewcommand{\abstracttextfont}{\normalfont\small}
+
+% =============================================================================
+% DOCUMENT METADATA
+% =============================================================================
+\title{
+    \vspace{-1.5cm}
+    \Large\textbf{Chest Xpert AI: Despliegue de un Clasificador Multi-Etiqueta de Patolog\'ias Tor\'acicas como Servicio Containerizado} \\[0.3cm]
+    \normalsize\normalfont Modelos en Producci\'on --- Programa de Especializaci\'on en IA Generativa y MLOps --- UNI 2026
+}
+
+\author{
+    \textbf{Angel Eduardo Hincho Jove} \\[0.1cm]
+    \small Universidad Nacional de Ingenier\'ia \\
+    \small\texttt{ahincho@unsa.edu.pe}
+}
+
+\date{\small\today}
+
+% =============================================================================
+% DOCUMENT START
+% =============================================================================
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+
+\input{sections/abstract}
+
+% --- Sections ---
+\input{sections/introduction}
+\input{sections/architecture}
+\input{sections/implementation}
+\input{sections/deployment}
+\input{sections/demo}
+\input{sections/conclusions}
+
+% --- Bibliography ---
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
