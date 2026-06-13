@@ -45,3 +45,27 @@ Se logr\'o desplegar exitosamente el modelo Chest Xpert AI como un servicio cont
     \item \textbf{Monitoreo de data drift}: alertas autom\'aticas cuando la distribuci\'on de entradas cambia respecto al training set.
     \item \textbf{Endpoint de explicabilidad}: Grad-CAM bajo demanda para interpretar predicciones individuales.
 \end{itemize}
+
+\subsection{Repositorios del proyecto}
+
+Todo el c\'odigo fuente est\'a disponible p\'ublicamente en GitHub:
+
+\begin{table}[H]
+\centering
+\caption{Repositorios del proyecto Chest Xpert AI.}
+\label{tab:repos}
+\small
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Repositorio} & \textbf{Descripci\'on} \\
+\midrule
+\href{https://github.com/ahincho/chest-xpert-backend}{\texttt{chest-xpert-backend}} & API REST (FastAPI + ONNX Runtime) + Dockerfile + CI/CD + Observabilidad \\
+\href{https://github.com/ahincho/chest-xpert-ai}{\texttt{chest-xpert-ai}} & Entrenamiento del modelo (PyTorch + TorchXRayVision + W\&B) \\
+\href{https://github.com/ahincho/chest-xpert-frontend}{\texttt{chest-xpert-frontend}} & Aplicaci\'on web (Angular) \\
+\href{https://github.com/ahincho/mlops-models-on-production}{\texttt{mlops-models-on-production}} & Este art\'iculo (LaTeX) + README de entrega \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent
+Imagen Docker p\'ublica: \texttt{ghcr.io/ahincho/chest-xpert-backend:latest}
