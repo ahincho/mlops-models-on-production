@@ -14,6 +14,7 @@ Se logr\'o desplegar exitosamente el modelo Chest Xpert AI como un servicio cont
     \item \textbf{Documentaci\'on clara}: README con instrucciones de construcci\'on, ejecuci\'on y ejemplo completo.
     \item \textbf{Pipeline CI/CD}: linting, testing, build y publicaci\'on autom\'atica en GHCR.
     \item \textbf{Versionado sem\'antico}: releases autom\'aticos basados en Conventional Commits.
+    \item \textbf{Observabilidad}: stack LGTM completo con traces, logs, m\'etricas y profiling continuo.
 \end{enumerate}
 
 \subsection{Decisiones t\'ecnicas clave}
@@ -37,9 +38,9 @@ Se logr\'o desplegar exitosamente el modelo Chest Xpert AI como un servicio cont
 \subsection{Trabajo futuro}
 
 \begin{itemize}
-    \item \textbf{Observabilidad}: endpoint \texttt{/metrics} con conteo de requests y latencia (formato Prometheus).
+    \item \textbf{Dashboards preconfigurados}: exportar dashboards de Grafana como JSON provisioning para despliegue autom\'atico.
+    \item \textbf{Alertas}: configurar alertas en Grafana cuando la latencia p95 supere un umbral o el error rate suba.
     \item \textbf{Frontend containerizado}: la aplicaci\'on Angular servida desde Nginx como segunda imagen Docker.
-    \item \textbf{Docker Compose}: orquestaci\'on local de backend + frontend con un solo \texttt{docker compose up}.
     \item \textbf{Kubernetes}: despliegue con Deployment + Service + Ingress para escalabilidad horizontal.
     \item \textbf{Monitoreo de data drift}: alertas autom\'aticas cuando la distribuci\'on de entradas cambia respecto al training set.
     \item \textbf{Endpoint de explicabilidad}: Grad-CAM bajo demanda para interpretar predicciones individuales.
