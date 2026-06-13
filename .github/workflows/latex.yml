@@ -67,7 +67,7 @@ jobs:
           files: "chest-xpert-mlops-article-*.pdf"
           generate_release_notes: true
           body: |
-            ## Chest Xpert AI — Modelos en Producción (Article v${{ github.ref_name }})
+            ## Chest Xpert AI — Modelos en Producción
 
             PDF del artículo compilado automáticamente desde LaTeX.
 
